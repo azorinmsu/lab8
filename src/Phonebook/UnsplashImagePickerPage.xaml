@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Phonebook.UnsplashImagePickerPage"
+             Title="Выбор изображения">
+
+    <ContentPage.Resources>
+        <!-- Стили -->
+        <Style TargetType="Button" x:Key="PrimaryButton">
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="BackgroundColor" Value="#6a11cb" />
+        </Style>
+
+        <Style TargetType="Button" x:Key="SecondaryButton">
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="TextColor" Value="#6a11cb" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="BorderColor" Value="#6a11cb" />
+            <Setter Property="BorderWidth" Value="2" />
+        </Style>
+    </ContentPage.Resources>
+
+    <!-- Фоновый градиент -->
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#f8f9ff" Offset="0.0" />
+            <GradientStop Color="#f0f2ff" Offset="1.0" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Шапка с поиском -->
+        <Frame Grid.Row="0" 
+               Padding="20" 
+               CornerRadius="0" 
+               BackgroundColor="White"
+               HasShadow="True">
+            <StackLayout Spacing="15">
+                <Label Text="Поиск изображений" 
+                       FontSize="20" 
+                       FontAttributes="Bold"
+                       TextColor="#333333"/>
+
+                <!-- Поле поиска -->
+                <Frame Padding="0"
+                       CornerRadius="12"
+                       BackgroundColor="#f5f5f5"
+                       HasShadow="False">
+                    <Grid ColumnDefinitions="Auto,*" Padding="15,0">
+                        <SearchBar x:Name="searchBar"
+                                   AutomationId="UnsplashSearchBar"
+                                   Placeholder="Введите запрос (природа, портрет, город...)"
+                                   TextChanged="OnSearchTextChanged"
+                                   BackgroundColor="Transparent"
+                                   CancelButtonColor="#6a11cb"
+                                   TextColor="#333333"
+                                   PlaceholderColor="#999999"
+                                   Grid.Column="1"/>
+                    </Grid>
+                </Frame>
+
+                <!-- Кнопка случайных изображений -->
+                <Button Text="Случайные изображения"
+                        AutomationId="UnsplashRandomButton"
+                        Clicked="OnRandomClicked"
+                        HorizontalOptions="Fill"
+                        HeightRequest="50"
+                        CornerRadius="12"
+                        BackgroundColor="Transparent"
+                        BorderColor="#6a11cb"
+                        BorderWidth="2"
+                        TextColor="#6a11cb"
+                        FontSize="16"/>
+            </StackLayout>
+        </Frame>
+
+        <!-- Коллекция изображений -->
+        <CollectionView Grid.Row="1"
+                        x:Name="imagesCollection"
+                        AutomationId="UnsplashImagesCollection"
+                        ItemsSource="{Binding Images}"
+                        SelectionMode="None"
+                        Margin="15"
+                        EmptyView="Пока нет изображений. Попробуйте поискать что-нибудь!">
+
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical"
+                                 Span="3"
+                                 HorizontalItemSpacing="8"
+                                 VerticalItemSpacing="8"/>
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="0"
+                           CornerRadius="12"
+                           HasShadow="True"
+                           HeightRequest="120"
+                           WidthRequest="120">
+
+                        <!-- Добавляем GestureRecognizer для тапа -->
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Tapped="OnImageTapped"
+                                CommandParameter="{Binding .}"/>
+                        </Frame.GestureRecognizers>
+
+                        <!-- Изображение -->
+                        <Image Source="{Binding Urls.Thumb}"
+                               Aspect="AspectFill"
+                               HeightRequest="120"
+                               WidthRequest="120"/>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <!-- Сообщение при пустой коллекции -->
+            <CollectionView.EmptyView>
+                <StackLayout HorizontalOptions="Center" 
+                             VerticalOptions="Center"
+                             Padding="40"
+                             Spacing="20">
+                    <Frame Padding="20"
+                           CornerRadius="20"
+                           BackgroundColor="White"
+                           HasShadow="True">
+                        <StackLayout Spacing="15">
+                            <Label Text="Нет изображений"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="#333333"
+                                   HorizontalOptions="Center"/>
+
+                            <Label Text="Введите запрос в поиске или нажмите 'Случайные изображения'"
+                                   FontSize="14"
+                                   TextColor="#666666"
+                                   HorizontalOptions="Center"
+                                   HorizontalTextAlignment="Center"/>
+                        </StackLayout>
+                    </Frame>
+                </StackLayout>
+            </CollectionView.EmptyView>
+
+            <!-- Индикатор загрузки внизу -->
+            <CollectionView.Footer>
+                <StackLayout Padding="20">
+                    <ActivityIndicator x:Name="loadingIndicator"
+                                       IsRunning="False"
+                                       Color="#6a11cb"
+                                       HorizontalOptions="Center"/>
+                    <Label x:Name="loadingLabel"
+                           Text="Загрузка..."
+                           IsVisible="False"
+                           HorizontalOptions="Center"
+                           TextColor="#666666"
+                           Margin="0,10,0,0"/>
+                </StackLayout>
+            </CollectionView.Footer>
+        </CollectionView>
+
+        <!-- Нижняя панель -->
+        <Frame Grid.Row="2"
+               Padding="20"
+               CornerRadius="0"
+               BackgroundColor="White"
+               HasShadow="True">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button Text="Отмена"
+                        AutomationId="UnsplashCancelButton"
+                        Clicked="OnCancelClicked"
+                        Grid.Column="0"
+                        Style="{StaticResource SecondaryButton}"/>
+
+                <Button Text="Готово"
+                        AutomationId="UnsplashDoneButton"
+                        Grid.Column="1"
+                        Style="{StaticResource PrimaryButton}"
+                        x:Name="selectButton"/>
+            </Grid>
+        </Frame>
+
+    </Grid>
+</ContentPage>

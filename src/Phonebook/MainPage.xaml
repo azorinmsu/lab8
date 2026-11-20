@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Phonebook.MainPage"
+             Title="Телефонный справочник">
+
+    <ContentPage.Resources>
+        <Style TargetType="Label" x:Key="ContactName">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="#6a11cb" />
+        </Style>
+
+        <Style TargetType="Label" x:Key="ContactDetail">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextColor" Value="#666666" />
+        </Style>
+    </ContentPage.Resources>
+
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#f8f9ff" Offset="0.0" />
+            <GradientStop Color="#f0f2ff" Offset="1.0" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Шапка -->
+        <Frame Grid.Row="0" 
+               Padding="20" 
+               CornerRadius="0" 
+               BackgroundColor="White"
+               HasShadow="True">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackLayout Grid.Column="0">
+                    <Label Text="ContactFlow" 
+                           FontSize="24" 
+                           FontAttributes="Bold"
+                           TextColor="#333333"/>
+                    <Label x:Name="contactsCountLabel"
+                           Text="0 контактов"
+                           FontSize="14"
+                           TextColor="#666666"/>
+                </StackLayout>
+
+                <StackLayout Grid.Column="1" 
+                             Orientation="Horizontal" 
+                             Spacing="10"
+                             VerticalOptions="Center">
+                    <Button Text="📥"
+                            AutomationId="ImportContactsButton"
+                            Clicked="OnImportClicked"
+                            WidthRequest="45"
+                            HeightRequest="45"
+                            CornerRadius="10"
+                            BackgroundColor="#E8F5E9"
+                            TextColor="#4CAF50"
+                            FontSize="16"/>
+
+                    <Button Text="📤"
+                            AutomationId="ExportContactsButton"
+                            Clicked="OnExportClicked"
+                            WidthRequest="45"
+                            HeightRequest="45"
+                            CornerRadius="10"
+                            BackgroundColor="#E3F2FD"
+                            TextColor="#2196F3"
+                            FontSize="16"/>
+                </StackLayout>
+            </Grid>
+        </Frame>
+
+        <!-- Поиск -->
+        <Frame Grid.Row="1"
+               Margin="15,10,15,10"
+               Padding="15"
+               CornerRadius="16"
+               BackgroundColor="White"
+               HasShadow="True">
+
+            <Frame Padding="0"
+                   CornerRadius="12"
+                   BackgroundColor="#f8f9ff"
+                   HasShadow="False">
+                <Grid ColumnDefinitions="Auto,*" Padding="15,0">
+
+                    <SearchBar x:Name="searchBar"
+                               AutomationId="SearchContactsBar"
+                               Placeholder="Поиск контактов..."
+                               TextChanged="OnSearchTextChanged"
+                               BackgroundColor="Transparent"
+                               CancelButtonColor="#6a11cb"
+                               TextColor="#333333"
+                               PlaceholderColor="#999999"
+                               Grid.Column="1"/>
+                </Grid>
+            </Frame>
+        </Frame>
+
+        <!-- Список контактов -->
+        <CollectionView x:Name="contactsList"
+                        AutomationId="ContactsCollection"
+                        Grid.Row="2"
+                        SelectionMode="Single"
+                        SelectionChanged="OnContactSelected"
+                        Margin="15,0,15,20"
+                        EmptyView="Пока нет контактов. Добавьте первый!">
+
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="0"
+                           CornerRadius="16"
+                           HasShadow="True"
+                           BackgroundColor="White"
+                           Margin="0,0,0,8">
+
+                        <Grid ColumnDefinitions="Auto,*,Auto" 
+                              Padding="15"
+                              ColumnSpacing="15">
+
+                            <!-- Аватар -->
+                            <Frame Grid.Column="0" 
+                                   Padding="0" 
+                                   CornerRadius="25" 
+                                   WidthRequest="50" 
+                                   HeightRequest="50"
+                                   HasShadow="True">
+
+                                <Ellipse WidthRequest="50" 
+                                         HeightRequest="50">
+                                    <Ellipse.Fill>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#6a11cb" Offset="0.0" />
+                                            <GradientStop Color="#2575fc" Offset="1.0" />
+                                        </LinearGradientBrush>
+                                    </Ellipse.Fill>
+                                </Ellipse>
+
+                                <Image Source="{Binding PhotoPath}" 
+                                       Aspect="AspectFill"
+                                       WidthRequest="48"
+                                       HeightRequest="48">
+                                    <Image.Clip>
+                                        <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24"/>
+                                    </Image.Clip>
+                                </Image>
+                            </Frame>
+
+                            <!-- Информация о контакте -->
+                            <StackLayout Grid.Column="1" 
+                                         VerticalOptions="Center"
+                                         Spacing="4">
+
+                                <Label Text="{Binding Name}" 
+                                       Style="{StaticResource ContactName}"
+                                       LineBreakMode="TailTruncation"/>
+
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <Label Text="📱"
+                                           FontSize="12"
+                                           Grid.Column="0"
+                                           Margin="0,0,5,0"/>
+                                    <Label Text="{Binding PhoneNumber}" 
+                                           Style="{StaticResource ContactDetail}"
+                                           Grid.Column="1"
+                                           LineBreakMode="TailTruncation"/>
+                                </Grid>
+
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <Label Text="✉️"
+                                           FontSize="12"
+                                           Grid.Column="0"
+                                           Margin="0,0,5,0"/>
+                                    <Label Text="{Binding Email}" 
+                                           Style="{StaticResource ContactDetail}"
+                                           Grid.Column="1"
+                                           LineBreakMode="TailTruncation"/>
+                                </Grid>
+                            </StackLayout>
+
+                            <!-- Быстрые действия -->
+                            <StackLayout Grid.Column="2" 
+                                         VerticalOptions="Center"
+                                         Spacing="6">
+
+                                <Button Text="📞" 
+                                        FontSize="14"
+                                        WidthRequest="36"
+                                        HeightRequest="36"
+                                        CornerRadius="18"
+                                        Padding="0"
+                                        BackgroundColor="#4CAF50"
+                                        TextColor="White"
+                                        Clicked="OnQuickCallClicked">
+                                    <Button.Shadow>
+                                        <Shadow Brush="#4CAF50" 
+                                                Offset="0,2" 
+                                                Opacity="0.3" 
+                                                Radius="4"/>
+                                    </Button.Shadow>
+                                </Button>
+
+                                <Button Text="✉️" 
+                                        FontSize="14"
+                                        WidthRequest="36"
+                                        HeightRequest="36"
+                                        CornerRadius="18"
+                                        Padding="0"
+                                        BackgroundColor="#2196F3"
+                                        TextColor="White"
+                                        Clicked="OnQuickEmailClicked">
+                                    <Button.Shadow>
+                                        <Shadow Brush="#2196F3" 
+                                                Offset="0,2" 
+                                                Opacity="0.3" 
+                                                Radius="4"/>
+                                    </Button.Shadow>
+                                </Button>
+                            </StackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <!-- Сообщение при пустом списке -->
+            <CollectionView.EmptyView>
+                <StackLayout HorizontalOptions="Center" 
+                             VerticalOptions="Center"
+                             Padding="40"
+                             Spacing="20">
+                    <Frame Padding="30"
+                           CornerRadius="20"
+                           BackgroundColor="White"
+                           HasShadow="True">
+                        <StackLayout Spacing="15">
+                            <Label Text="📇" 
+                                   FontSize="50"
+                                   HorizontalOptions="Center"/>
+
+                            <Label Text="Список контактов пуст"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="#333333"
+                                   HorizontalOptions="Center"/>
+
+                            <Label Text="Добавьте первый контакт, нажав кнопку '+' внизу экрана"
+                                   FontSize="14"
+                                   TextColor="#666666"
+                                   HorizontalOptions="Center"
+                                   HorizontalTextAlignment="Center"/>
+                        </StackLayout>
+                    </Frame>
+                </StackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <!-- Плавающая кнопка добавления -->
+        <Frame Grid.Row="2"
+               Padding="0"
+               BackgroundColor="Transparent"
+               HorizontalOptions="End"
+               VerticalOptions="End"
+               Margin="0,0,20,20">
+            <Button Text="+"
+                    AutomationId="AddContactButton"
+                    Clicked="OnAddContactClicked"
+                    WidthRequest="60"
+                    HeightRequest="60"
+                    CornerRadius="30"
+                    FontSize="28"
+                    TextColor="White"
+                    BackgroundColor="#6a11cb">
+                <Button.Shadow>
+                    <Shadow Brush="#6a11cb" 
+                            Offset="0,6" 
+                            Opacity="0.3" 
+                            Radius="12"/>
+                </Button.Shadow>
+            </Button>
+        </Frame>
+
+    </Grid>
+</ContentPage>

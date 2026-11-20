@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Основные цвета -->
+    <Color x:Key="Primary">#2196F3</Color>
+    <Color x:Key="PrimaryLight">#64B5F6</Color>
+    <Color x:Key="PrimaryDark">#1976D2</Color>
+    <Color x:Key="Accent">#FF9800</Color>
+    <Color x:Key="Secondary">#4CAF50</Color>
+    <Color x:Key="White">White</Color>
+    <Color x:Key="Black">Black</Color>
+
+    <!-- Фоны и поверхности -->
+    <Color x:Key="Surface">#FFFFFF</Color>
+    <Color x:Key="DarkSurface">#1E1E1E</Color>
+    <Color x:Key="Card">#FFFFFF</Color>
+    <Color x:Key="DarkCard">#2D2D2D</Color>
+    <Color x:Key="Background">#FFFFFF</Color>
+    <Color x:Key="DarkBackground">#121212</Color>
+
+    <!-- Текст -->
+    <Color x:Key="TextPrimary">#212121</Color>
+    <Color x:Key="TextSecondary">#757575</Color>
+    <Color x:Key="TextTertiary">#9E9E9E</Color>
+    <Color x:Key="DarkTextPrimary">#FFFFFF</Color>
+    <Color x:Key="DarkTextSecondary">#B0B0B0</Color>
+
+    <!-- Серые оттенки -->
+    <Color x:Key="Gray50">#FAFAFA</Color>
+    <Color x:Key="Gray100">#F5F5F5</Color>
+    <Color x:Key="Gray200">#EEEEEE</Color>
+    <Color x:Key="Gray300">#E0E0E0</Color>
+    <Color x:Key="Gray400">#BDBDBD</Color>
+    <Color x:Key="Gray500">#9E9E9E</Color>
+    <Color x:Key="Gray600">#757575</Color>
+    <Color x:Key="Gray700">#616161</Color>
+    <Color x:Key="Gray800">#424242</Color>
+    <Color x:Key="Gray900">#212121</Color>
+
+</ResourceDictionary>

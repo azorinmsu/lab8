@@ -1,0 +1,41 @@
+## Build artifacts
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+TestResults/
+coverage/
+*.trx
+
+## Visual Studio and Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## NuGet
+.nuget/
+*.nupkg
+project.lock.json
+
+## Local configuration and secrets
+appsettings.local.json
+**/appsettings.local.json
+unsplash.settings.json
+
+## Measurements produced by students
+measurements/
+
+## Android build output
+*.apk
+*.aab
+*.keystore
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Instructor materials are not part of the student repository
+/instructor-private/

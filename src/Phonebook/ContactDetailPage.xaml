@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Phonebook.Converters"
+             x:Class="Phonebook.ContactDetailPage"
+             Title="Телефонный справочник">
+
+    <ContentPage.Resources>
+        <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+
+        <!-- Стили -->
+        <Style TargetType="Label" x:Key="SectionLabel">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextColor" Value="#666666" />
+            <Setter Property="Margin" Value="0,10,0,5" />
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
+
+        <Style TargetType="Entry" x:Key="ModernEntry">
+            <Setter Property="BackgroundColor" Value="White" />
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="PlaceholderColor" Value="#999999" />
+            <Setter Property="TextColor" Value="#333333" />
+        </Style>
+
+        <Style TargetType="Editor" x:Key="ModernEditor">
+            <Setter Property="BackgroundColor" Value="White" />
+            <Setter Property="MinimumHeightRequest" Value="60" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="PlaceholderColor" Value="#999999" />
+            <Setter Property="TextColor" Value="#333333" />
+        </Style>
+
+        <Style TargetType="Button" x:Key="PrimaryButton">
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="BackgroundColor" Value="#6a11cb" />
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="#5a0db8" />
+                                <Setter Property="Scale" Value="0.98" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Button" x:Key="SecondaryButton">
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="TextColor" Value="#6a11cb" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="BorderColor" Value="#6a11cb" />
+            <Setter Property="BorderWidth" Value="2" />
+        </Style>
+
+        <Style TargetType="Button" x:Key="ActionButton">
+            <Setter Property="HeightRequest" Value="45" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="Margin" Value="0,5" />
+        </Style>
+    </ContentPage.Resources>
+
+    <!-- Фоновый градиент -->
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#f8f9ff" Offset="0.0" />
+            <GradientStop Color="#f0f2ff" Offset="1.0" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
+
+    <ScrollView>
+        <StackLayout Padding="15" Spacing="0">
+
+            <!-- Заголовок секции -->
+            <Frame Margin="0,0,0,20" 
+                   Padding="15" 
+                   CornerRadius="15" 
+                   BackgroundColor="White"
+                   HasShadow="True">
+                <StackLayout>
+                    <Label Text="Контактная информация" 
+                           FontSize="20" 
+                           FontAttributes="Bold"
+                           TextColor="#333333"
+                           HorizontalOptions="Center"/>
+                </StackLayout>
+            </Frame>
+
+            <!-- Фото профиля -->
+            <Frame HorizontalOptions="Center" 
+                   VerticalOptions="Center" 
+                   Padding="5" 
+                   CornerRadius="150"
+                   BackgroundColor="White"
+                   HasShadow="True"
+                   Margin="0,0,0,20">
+                <Grid>
+                    <Ellipse HeightRequest="150" 
+                             WidthRequest="150">
+                        <Ellipse.Fill>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="White" Offset="0.0" />
+                            </LinearGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
+
+                    <Image x:Name="contactImage" 
+                           WidthRequest="80"
+                           HeightRequest="80"
+                           Aspect="AspectFill"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center">
+                        <Image.Clip>
+                            <EllipseGeometry Center="0,100" RadiusX="100" RadiusY="150"/>
+                        </Image.Clip>
+                    </Image>
+                </Grid>
+            </Frame>
+
+            <!-- Кнопки для фото -->
+            <Grid ColumnDefinitions="*,*" 
+                  ColumnSpacing="10" 
+                  Margin="0,0,0,25">
+                <Button Text="Выбрать фото"
+                        AutomationId="PickPhotoButton"
+                        Clicked="OnImageTapped" 
+                        Grid.Column="0"
+                        Style="{StaticResource SecondaryButton}"/>
+
+                <Button Text="Unsplash"
+                        AutomationId="OpenUnsplashButton"
+                        Clicked="OnUnsplashClicked" 
+                        Grid.Column="1"
+                        Style="{StaticResource PrimaryButton}"/>
+            </Grid>
+
+            <!-- Форма редактирования -->
+            <Frame Padding="20" 
+                   CornerRadius="20" 
+                   BackgroundColor="White"
+                   HasShadow="True">
+                <StackLayout Spacing="0">
+
+                    <!-- Имя -->
+                    <Label Text="Имя" Style="{StaticResource SectionLabel}"/>
+                    <Entry x:Name="nameEntry"
+                           AutomationId="NameEntry"
+                           Placeholder="Введите имя"
+                           Style="{StaticResource ModernEntry}"/>
+
+                    <!-- Телефон -->
+                    <Label Text="Номер телефона" Style="{StaticResource SectionLabel}"/>
+                    <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,10">
+                        <Entry x:Name="phoneEntry"
+                               AutomationId="PhoneEntry"
+                               Placeholder="+7 (XXX) XXX-XX-XX" 
+                               Keyboard="Telephone"
+                               Grid.Column="1"
+                               Style="{StaticResource ModernEntry}"
+                               Margin="0"/>
+                    </Grid>
+
+                    <!-- Email -->
+                    <Label Text="Email" Style="{StaticResource SectionLabel}"/>
+                    <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,10">
+                        <Entry x:Name="emailEntry"
+                               AutomationId="EmailEntry"
+                               Placeholder="example@email.com" 
+                               Keyboard="Email"
+                               Grid.Column="1"
+                               Style="{StaticResource ModernEntry}"
+                               Margin="0"/>
+                    </Grid>
+
+                    <!-- Адрес -->
+                    <Label Text="Адрес" Style="{StaticResource SectionLabel}"/>
+                    <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,10">
+                        <Editor x:Name="addressEntry"
+                               AutomationId="AddressEditor"
+                               Placeholder="Введите адрес" 
+                               AutoSize="TextChanges"
+                               Grid.Column="1"
+                               Style="{StaticResource ModernEditor}"
+                               Margin="0"/>
+                    </Grid>
+
+                    <!-- Описание -->
+                    <Label Text="Описание" Style="{StaticResource SectionLabel}"/>
+                    <Editor x:Name="descriptionEntry"
+                           AutomationId="DescriptionEditor"
+                           Placeholder="Дополнительная информация..." 
+                           AutoSize="TextChanges"
+                           Style="{StaticResource ModernEditor}"
+                           MinimumHeightRequest="80"/>
+                </StackLayout>
+            </Frame>
+
+            <!-- Быстрые действия -->
+            <Frame Padding="20" 
+                   CornerRadius="20" 
+                   BackgroundColor="White"
+                   HasShadow="True"
+                   Margin="0,20,0,20">
+                <StackLayout>
+                    <Label Text="Быстрые действия" 
+                           FontSize="16" 
+                           FontAttributes="Bold"
+                           TextColor="#333333"
+                           Margin="0,0,0,10"/>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Button Text="Позвонить"
+                                AutomationId="CallButton"
+                                Clicked="OnCallClicked" 
+                                Grid.Column="0"
+                                BackgroundColor="#4CAF50"
+                                Style="{StaticResource ActionButton}"/>
+
+                        <Button Text="Написать"
+                                AutomationId="EmailButton"
+                                Clicked="OnEmailClicked" 
+                                Grid.Column="1"
+                                BackgroundColor="#2196F3"
+                                Style="{StaticResource ActionButton}"/>
+                    </Grid>
+                </StackLayout>
+            </Frame>
+
+            <!-- Основные кнопки -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,0,0,20">
+                <Button Text="Сохранить"
+                        AutomationId="SaveContactButton"
+                        Clicked="OnSaveClicked" 
+                        Grid.Column="0"
+                        Style="{StaticResource PrimaryButton}"/>
+
+                <Button Text="Удалить"
+                        AutomationId="DeleteContactButton"
+                        Clicked="OnDeleteClicked" 
+                        Grid.Column="1"
+                        BackgroundColor="#FF5252"
+                        Style="{StaticResource ActionButton}"/>
+            </Grid>
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
